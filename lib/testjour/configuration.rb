@@ -43,7 +43,7 @@ module Testjour
     def setup_mysql
       return unless mysql_mode?
 
-      mysql = MysqlDatabaseSetup.new
+      mysql = MysqlDatabaseSetup.new(@options[:runner_database_name])
 
       mysql.create_database
       at_exit do
@@ -144,6 +144,9 @@ module Testjour
       if @options[:create_mysql_db]
         args_from_options << "--create-mysql-db"
       end
+      if @options[:runner_database_name]
+        args_from_options << "--mysql-db-name=#{@options[:runner_database_name]}"
+      end
       return args_from_options
     end
 
@@ -170,6 +173,10 @@ module Testjour
 
         opts.on("--create-mysql-db", "Create MySQL for each slave") do |server|
           @options[:create_mysql_db] = true
+        end
+
+        opts.on("--mysql-db-name=DATABASE", "Use DATABASE as name for MySQL DB") do |name|
+          @options[:runner_database_name] = name
         end
 
         opts.on("--max-local-slaves=MAX", "Maximum number of local slaves") do |max|
