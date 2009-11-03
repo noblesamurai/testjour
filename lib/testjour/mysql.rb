@@ -4,16 +4,18 @@ module Testjour
   
   class MysqlDatabaseSetup
 
-    def initialize(runner_database_name = nil)
+    def initialize(runner_database_name = nil, options = nil)
       @runner_database_name = runner_database_name
+      @username = options["dbusername"] if options && options["dbusername"]
+      @password = options["dbpassword"] if options && options["dbpassword"]
     end
     
     def create_database
-      run "/usr/local/mysql/bin/mysqladmin create #{runner_database_name}"
+      run "/usr/local/mysql/bin/mysqladmin#{@username ? " -u " + @username : ""}#{@password ? " -p " + @password : ""} create #{runner_database_name}"
     end
     
     def drop_database
-      run "/usr/local/mysql/bin/mysqladmin -f drop #{runner_database_name}"
+      run "/usr/local/mysql/bin/mysqladmin#{@username ? " -u " + @username : ""}#{@password ? " -p " + @password : ""} -f drop #{runner_database_name}"
     end
 
     def load_schema
@@ -22,7 +24,7 @@ module Testjour
       unless File.exist?(schema_file)
       end
       
-      run "/usr/local/mysql/bin/mysql #{runner_database_name} < #{schema_file}"
+      run "/usr/local/mysql/bin/mysql#{@username ? " -u " + @username : ""}#{@password ? " -p " + @password : ""} #{runner_database_name} < #{schema_file}"
     end
     
     def runner_database_name

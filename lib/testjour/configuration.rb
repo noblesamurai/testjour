@@ -1,4 +1,8 @@
 module Testjour
+  TestJour_config = Hash.new
+  if File.exists?("config/testjour.yml")
+    TestJour_config.merge! YAML.load_file("config/testjour.yml")
+  end
 
   class Configuration
     attr_reader :unknown_args, :options, :path, :full_uri
@@ -43,7 +47,7 @@ module Testjour
     def setup_mysql
       return unless mysql_mode?
 
-      mysql = MysqlDatabaseSetup.new(@options[:runner_database_name])
+      mysql = MysqlDatabaseSetup.new(@options[:runner_database_name],TestJour_config)
 
       mysql.create_database
       at_exit do
