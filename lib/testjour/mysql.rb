@@ -11,11 +11,11 @@ module Testjour
     end
     
     def create_database
-      run "/usr/local/mysql/bin/mysqladmin#{@username ? " -u " + @username : ""}#{@password ? " -p " + @password : ""} create #{runner_database_name}"
+      run "/usr/local/mysql/bin/mysqladmin#{@username ? " -u " + @username : ""}#{@password ? " --password=" + @password : ""} create #{runner_database_name}"
     end
     
     def drop_database
-      run "/usr/local/mysql/bin/mysqladmin#{@username ? " -u " + @username : ""}#{@password ? " -p " + @password : ""} -f drop #{runner_database_name}"
+      run "/usr/local/mysql/bin/mysqladmin#{@username ? " -u " + @username : ""}#{@password ? " --password=" + @password : ""} -f drop #{runner_database_name}"
     end
 
     def load_schema
@@ -24,7 +24,7 @@ module Testjour
       unless File.exist?(schema_file)
       end
       
-      run "/usr/local/mysql/bin/mysql#{@username ? " -u " + @username : ""}#{@password ? " -p " + @password : ""} #{runner_database_name} < #{schema_file}"
+      run "/usr/local/mysql/bin/mysql#{@username ? " -u " + @username : ""}#{@password ? " --password=" + @password : ""} #{runner_database_name} < #{schema_file}"
     end
     
     def runner_database_name
