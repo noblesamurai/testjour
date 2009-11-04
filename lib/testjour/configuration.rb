@@ -117,7 +117,7 @@ module Testjour
     def parse!
       begin
         option_parser.parse!(@args)
-        Dir.chdir(self.in) do
+        Dir.chdir(self.in ? self.in : ".") do
           if File.exists?("config/testjour.yml")
             TestJour_config.merge! YAML.load_file("config/testjour.yml") if YAML.load_file("config/testjour.yml")
           end
