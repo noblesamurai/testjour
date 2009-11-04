@@ -1,8 +1,6 @@
 module Testjour
   TestJour_config = Hash.new
-  if File.exists?("config/testjour.yml")
-    TestJour_config.merge! YAML.load_file("config/testjour.yml") if YAML.load_file("config/testjour.yml")
-  end
+
 
   class Configuration
     attr_reader :unknown_args, :options, :path, :full_uri
@@ -119,6 +117,11 @@ module Testjour
     def parse!
       begin
         option_parser.parse!(@args)
+        Dir.chdir(self.in) do
+          if File.exists?("config/testjour.yml")
+            TestJour_config.merge! YAML.load_file("config/testjour.yml") if YAML.load_file("config/testjour.yml")
+          end
+        end
       rescue OptionParser::InvalidOption => e
         e.recover @args
         saved_arg = @args.shift
