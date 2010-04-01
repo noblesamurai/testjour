@@ -51,10 +51,10 @@ module Testjour
     def command
       excludes = ""
       if File.exists?(file = "config/testjour.yml")
-	config = YAML.load_file(file).symbolize_keys
-        excludes = config[:exclude].split(",").map { |exclude|
+	config = YAML.load_file(file)
+        excludes = config["exclude"].split(",").map { |exclude|
           " --exclude=#{exclude}"
-        }.join(" ") unless config[:exclude].blank?
+        }.join(" ") unless config["exclude"].blank?
       end
       "rsync -az -e \"ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\" --delete#{excludes} --exclude=.git --exclude=*.log --exclude=*.pid #{@source_uri}/ #{destination_dir}"
     end
