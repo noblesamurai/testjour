@@ -26,16 +26,36 @@ module Testjour
       @options[:max_local_slaves] || 2
     end
 
+    def max_remote_slaves
+      @options[:max_remote_slaves] || 1
+    end
+
     def in
       @options[:in]
     end
 
     def rsync_uri
-      full_uri.user + "@" + full_uri.host + ":" + full_uri.path
+      external_rsync_uri || "#{full_uri.user}#{'@' if full_uri.user}#{full_uri.host}:#{full_uri.path}"
+    end
+
+    def external_rsync_uri
+      @options[:rsync_uri]
     end
 
     def queue_host
-      @queue_host || Testjour.socket_hostname
+      @queue_host || @options[:queue_host] || Testjour.socket_hostname
+    end
+    
+    def external_queue_host?
+      queue_host != Testjour.socket_hostname
+    end
+
+    def queue_prefix
+      @options[:queue_prefix] || 'default'
+    end
+    
+    def queue_timeout
+      @options[:queue_timeout].to_i || 270
     end
 
     def remote_slaves
@@ -114,6 +134,28 @@ module Testjour
       end
     end
 
+    def load_additional_args_from_external_file
+      args_from_file = begin
+        if File.exist?(args_file)
+          File.read(args_file).strip.split
+        else
+          []
+        end
+      end
+      unshift_args(args_from_file)
+    end
+
+    def args_file
+      # We need to know about this CLI option prior to OptParse's parse
+      args_file_option = @args.detect{|arg| arg =~ /^--testjour-config=/}
+      if args_file_option
+        args_file_option =~ /^--testjour-config=(.*)/
+        $1
+      else
+        'testjour.yml'
+      end
+    end
+
     def parse!
       begin
         option_parser.parse!(@args)
@@ -139,7 +181,7 @@ module Testjour
       full_uri = URI.parse(@args.shift)
       @path = full_uri.path
       @full_uri = full_uri.dup
-      @queue_host = full_uri.host
+      @queue_host = full_uri.host unless options[:queue_host]
     end
 
     def run_slave_args
@@ -154,6 +196,12 @@ module Testjour
       if @options[:runner_database_name]
         args_from_options << "--mysql-db-name=#{@options[:runner_database_name]}"
       end
+      if @options[:queue_host] || external_queue_host?
+        args_from_options << "--queue-host=#{queue_host}"
+      end
+      if @options[:queue_prefix]
+        args_from_options << "--queue-prefix=#{@options[:queue_prefix]}"
+      end
       return args_from_options
     end
 
@@ -165,7 +213,11 @@ module Testjour
 
     def option_parser
       OptionParser.new do |opts|
-        opts.on("--on=SLAVE", "Specify a slave URI") do |slave|
+        opts.on("--testjour-config=ARGS_FILE", "Load additional testjour args from the specified file (defaults to testjour.yml)") do |args_file|
+          @options[:args_file] = args_file
+        end
+
+        opts.on("--on=SLAVE", "Specify a slave URI (testjour://user@host:/path/to/working/dir?workers=3)") do |slave|
           @options[:slaves] ||= []
           @options[:slaves] << slave
         end
@@ -174,16 +226,40 @@ module Testjour
           @options[:in] = directory
         end
 
+        opts.on("--max-remote-slaves=MAX", "Number of workers to run (for run:remote only)") do |max|
+          @options[:max_remote_slaves] = max.to_i
+        end
+
         opts.on("--strict", "Fail if there are any undefined steps") do
           @options[:strict] = true
         end
 
-        opts.on("--create-mysql-db", "Create MySQL for each slave") do |server|
+        opts.on("--create-mysql-db", "Create MySQL for each slave") do
           @options[:create_mysql_db] = true
         end
 
         opts.on("--mysql-db-name=DATABASE", "Use DATABASE as name for MySQL DB") do |name|
           @options[:runner_database_name] = name
+        end
+        
+        opts.on("--simple-progress", "Use a simpler progress bar that may display better in logs") do
+          @options[:simple_progress] = true
+        end
+
+        opts.on("--queue-host=QUEUE_HOST", "Use another server to host the main redis queue") do |queue_host|
+          @options[:queue_host] = queue_host
+        end
+
+        opts.on("--queue-prefix=QUEUE_PREFIX", "Provide a prefix to uniquely identify this testjour run (Default is 'default')") do |queue_prefix|
+          @options[:queue_prefix] = queue_prefix
+        end
+
+        opts.on("--queue-timeout=QUEUE_TIMEOUT", "How long to wait for results to appear in the queue before giving up") do |queue_timeout|
+          @options[:queue_timeout] = queue_timeout
+        end
+
+        opts.on("--rsync-uri=RSYNC_URI", "Use another location to host the codebase for slave rsync (master will rsync to this URI first)") do |rsync_uri|
+          @options[:rsync_uri] = rsync_uri
         end
 
         opts.on("--max-local-slaves=MAX", "Maximum number of local slaves") do |max|

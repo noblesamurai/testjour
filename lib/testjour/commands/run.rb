@@ -16,13 +16,22 @@ module Commands
   class Run < Command
 
     def execute
-      configuration.unshift_args(testjour_yml_args)
+      configuration.load_additional_args_from_external_file
       configuration.parse!
       configuration.setup
 
       if configuration.feature_files.any?
-        RedisQueue.reset_all
+        redis_queue = RedisQueue.new(configuration.queue_host,
+                       configuration.queue_prefix,
+                       configuration.queue_timeout)
+        redis_queue.reset_all
         queue_features
+        
+        at_exit do
+          Testjour.logger.info caller.join("\n")
+          redis_queue.reset_all
+        end
+        
 
         @started_slaves = 0
         start_slaves
@@ -38,7 +47,9 @@ module Commands
 
     def queue_features
       Testjour.logger.info("Queuing features...")
-      queue = RedisQueue.new(configuration.queue_host)
+      queue = RedisQueue.new(configuration.queue_host,
+                             configuration.queue_prefix,
+                             configuration.queue_timeout)
 
       configuration.feature_files.each do |feature_file|
         queue.push(:feature_files, feature_file)
@@ -59,21 +70,31 @@ module Commands
     end
 
     def start_remote_slaves
-      configuration.remote_slaves.each do |remote_slave|
-        @started_slaves += 1
-        start_remote_slave(remote_slave)
+      if configuration.remote_slaves.any?
+        if configuration.external_rsync_uri
+          Rsync.copy_from_current_directory_to(configuration.external_rsync_uri)
+        end
+        configuration.remote_slaves.each do |remote_slave|
+          @started_slaves += 1
+          start_remote_slave(remote_slave)
+        end
       end
     end
 
     def start_remote_slave(remote_slave)
+      num_workers = 1
+      if remote_slave.match(/\?workers=(\d+)/)
+        num_workers = $1.to_i
+        remote_slave.gsub(/\?workers=(\d+)/, '')
+      end
       uri = URI.parse(remote_slave)
-      cmd = remote_slave_run_command(uri.host, uri.path)
+      cmd = remote_slave_run_command(uri.user, uri.host, uri.path, num_workers)
       Testjour.logger.info "Starting remote slave: #{cmd}"
       detached_exec(cmd)
     end
 
-    def remote_slave_run_command(host, path)
-      "ssh #{host} testjour run:remote --in=#{path} #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
+    def remote_slave_run_command(user, host, path, max_remote_slaves)
+      "ssh -o StrictHostKeyChecking=no #{user}#{'@' if user}#{host} testjour run:remote --in=#{path} --max-remote-slaves=#{max_remote_slaves} #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
     end
 
     def start_slave
@@ -81,19 +102,11 @@ module Commands
       detached_exec(local_run_command)
     end
 
-    def testjour_yml_args
-      @testjour_yml_args ||= begin
-        if File.exist?("testjour.yml")
-          File.read("testjour.yml").strip.split
-        else
-          []
-        end
-      end
-    end
-
     def print_results
       results_formatter = ResultsFormatter.new(step_counter, configuration.options)
-      queue = RedisQueue.new(configuration.queue_host)
+      queue = RedisQueue.new(configuration.queue_host,
+                             configuration.queue_prefix,
+                             configuration.queue_timeout)
 
       step_counter.count.times do
         results_formatter.result(queue.blocking_pop(:results))
@@ -119,9 +132,13 @@ module Commands
     end
 
     def testjour_uri
-      user = Etc.getpwuid.name
-      host = Testjour.socket_hostname
-      "http://#{user}@#{host}" + File.expand_path(".")
+      if configuration.external_rsync_uri
+        "rsync://#{configuration.external_rsync_uri}"
+      else
+        user = Etc.getpwuid.name
+        host = Testjour.socket_hostname
+        "rsync://#{user}@#{host}" + File.expand_path(".")
+      end
     end
 
     def testjour_path

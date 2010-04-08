@@ -8,48 +8,58 @@ require "testjour/rsync"
 require "stringio"
 
 module Testjour
-module Commands
+  module Commands
     
-  class RunRemote < RunSlave
+    class RunRemote < Command
+        
+      def dir
+        configuration.in
+      end
     
-    def execute
-      configuration.parse!
-      configuration.parse_uri!
-      
-      Dir.chdir(configuration.in) do
-        Testjour.setup_logger(configuration.in)
-        Testjour.logger.info "Starting run:remote"
+      def execute
+        configuration.parse!
+        configuration.parse_uri!
 
-        rsync
-        bundler
-
-        begin
-          Testjour.logger.info "Setup"
-          configuration.setup
-          configuration.setup_mysql
-          Testjour.logger.info "Requiring"
-          require_files
-          Testjour.logger.info "Working"
-
-          work
-        rescue Object => ex
-          Testjour.logger.error "run:remote error: #{ex.message}"
-          Testjour.logger.error ex.backtrace.join("\n")
+        Dir.chdir(dir) do
+          Testjour.setup_logger(dir)
+          Testjour.logger.info "Starting #{self.class.name}"
+          rsync
+          bundler
+          start_additional_slaves
         end
       end
+      
+      def start_additional_slaves
+        1.upto(configuration.max_remote_slaves) do |i|
+          start_slave
+        end
+      end
+      
+      def start_slave
+        Testjour.logger.info "Starting slave: #{local_run_command}"
+        detached_exec(local_run_command)
+      end
+      
+      def local_run_command
+        "testjour run:slave #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
+      end
+
+      def testjour_uri
+        user = Etc.getpwuid.name
+        host = Testjour.socket_hostname
+        "rsync://#{user}@#{host}" + File.expand_path(".")
+      end      
+      
+      def rsync
+        Rsync.copy_to_current_directory_from(configuration.rsync_uri)
+      end
+      
+      def bundler
+        return unless File.exists?('.bundle')
+        Testjour.logger.info "Running bundle install"
+        `bundle install`
+      end
     end
-    
-    def rsync
-      Rsync.copy_to_current_directory_from(configuration.rsync_uri)
-    end
-    
-    def bundler
-      return unless File.exists?('.bundle')
-      Testjour.logger.info "Running bundle install"
-      `bundle install`
-    end
-    
-  end
   
-end
+  end
 end
