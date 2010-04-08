@@ -49,7 +49,8 @@ module Commands
 
     def execute_features(features)
       http_formatter = Testjour::HttpFormatter.new(configuration)
-      tree_walker = Cucumber::Ast::TreeWalker.new(step_mother, [http_formatter])
+      html_formatter = Cucumber::Formatter::Html.new(step_mother, 'features.html')
+      tree_walker = Cucumber::Ast::TreeWalker.new(step_mother, [http_formatter,html_formatter])
       tree_walker.options = configuration.cucumber_configuration.options
       Testjour.logger.info "Visiting..."
       tree_walker.visit_features(features)
