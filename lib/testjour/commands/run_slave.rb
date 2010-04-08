@@ -1,5 +1,6 @@
 require "testjour/commands/command"
 require "cucumber"
+require "cucumber/formatter/html"
 require "uri"
 require "daemons/daemonize"
 require "testjour/cucumber_extensions/http_formatter"
