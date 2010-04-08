@@ -21,6 +21,7 @@ module Commands
         Testjour.logger.info "Starting run:remote"
 
         rsync
+        bundler
 
         begin
           Testjour.logger.info "Setup"
@@ -40,6 +41,12 @@ module Commands
     
     def rsync
       Rsync.copy_to_current_directory_from(configuration.rsync_uri)
+    end
+    
+    def bundler
+      return unless File.exists?('.bundle')
+      Testjour.logger.info "Running bundle install"
+      `bundle install`
     end
     
   end
