@@ -34,6 +34,8 @@ module Commands
           preload_app
           
           work
+        rescue SystemExit => ex
+          Testjour.logger.info "Killing child..."
         rescue Object => ex
           Testjour.logger.error "#{self.class.name} error: #{ex.message}"
           Testjour.logger.error ex.backtrace.join("\n")
@@ -69,7 +71,7 @@ module Commands
             Testjour.logger.info "Executing: #{feature_file}"
             failure = execute_features(features)
             Testjour.logger.info "Done: #{feature_file}"
-            # exit! unless @cant_fork
+            exit unless @cant_fork
           end
         else
           Testjour.logger.info "No feature file found. Finished"
