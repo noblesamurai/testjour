@@ -13,6 +13,10 @@ module Testjour
       # do nothing
     end
     
+    def move_progress
+      # do nothing
+    end
+    
   end
   
 end
