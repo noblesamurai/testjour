@@ -69,7 +69,7 @@ module Commands
             Testjour.logger.info "Executing: #{feature_file}"
             failure = execute_features(features)
             Testjour.logger.info "Done: #{feature_file}"
-            exit(failure ? 1 : 0) unless @cant_fork
+            exit!(failure ? 1 : 0) unless @cant_fork
           end
         else
           Testjour.logger.info "No feature file found. Finished"
