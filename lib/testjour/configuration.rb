@@ -206,6 +206,9 @@ module Testjour
       if @options[:queue_prefix]
         args_from_options << "--queue-prefix=#{@options[:queue_prefix]}"
       end
+      if @options[:master_host]
+        args_from_options << "--master-host=#{@options[:master_host]}"
+      end
       return args_from_options
     end
 
