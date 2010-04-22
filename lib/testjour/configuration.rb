@@ -61,6 +61,10 @@ module Testjour
     def remote_slaves
       @options[:slaves] || []
     end
+    
+    def master_host
+      @options[:master_host]
+    end
 
     def setup_mysql
       return unless mysql_mode?
@@ -264,6 +268,10 @@ module Testjour
 
         opts.on("--max-local-slaves=MAX", "Maximum number of local slaves") do |max|
           @options[:max_local_slaves] = max.to_i
+        end
+        
+        opts.on("--master-host=MASTER_HOST", "Override the master host, useful if hostname doesn't resolve") do |master_host|
+          @options[:master_host] = master_host
         end
       end
     end
