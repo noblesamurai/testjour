@@ -46,9 +46,8 @@ module Testjour
       end
 
       def testjour_uri
-        Testjour.logger.info "Configuration Host is: #{configuration.master_host}"
         user = Etc.getpwuid.name
-        host = configuration.master_host || Testjour.socket_hostname
+        host = Testjour.socket_hostname
         "rsync://#{user}@#{host}" + File.expand_path(".")
       end      
       

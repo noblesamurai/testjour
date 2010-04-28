@@ -108,12 +108,12 @@ module Commands
     def fork
       return if @cant_fork
 
-      begin
-        Kernel.fork
-      rescue NotImplementedError
+      # begin
+        # Kernel.fork
+      # rescue NotImplementedError
         @cant_fork = true
         nil
-      end
+      # end
     end
     
     # Enables GC Optimizations if you're running REE.

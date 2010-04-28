@@ -136,7 +136,7 @@ module Commands
         "rsync://#{configuration.external_rsync_uri}"
       else
         user = Etc.getpwuid.name
-        host = Testjour.socket_hostname
+        host = configuration.master_host || Testjour.socket_hostname
         "rsync://#{user}@#{host}" + File.expand_path(".")
       end
     end
