@@ -36,5 +36,10 @@ CLEAN.include ["pkg", "*.gem", "doc", "ri", "coverage"]
 desc 'Install the package as a gem.'
 task :install => [:clean, :package] do
   gem = Dir['pkg/*.gem'].first
+  sh "gem install --no-rdoc --no-ri --local #{gem}"
+end
+
+task :sudo_install => [:clean, :package] do
+  gem = Dir['pkg/*.gem'].first
   sh "sudo gem install --no-rdoc --no-ri --local #{gem}"
 end

@@ -56,6 +56,8 @@ module Commands
                              configuration.queue_prefix,
                              configuration.queue_timeout)
       feature_file = true
+      
+      @html_out_file = File.open('features.html','w')
 
       while feature_file
         if (feature_file = queue.pop(:feature_files))
@@ -81,7 +83,7 @@ module Commands
 
     def execute_features(features)
       http_formatter = Testjour::HttpFormatter.new(configuration)
-      html_formatter = Testjour::HtmlFormatter.new(step_mother, File.open('features.html','a'), nil)
+      html_formatter = Testjour::HtmlFormatter.new(step_mother, @html_out_file, nil)
       tree_walker = Cucumber::Ast::TreeWalker.new(step_mother, [html_formatter,http_formatter], STDOUT)
       tree_walker.options = configuration.cucumber_configuration.options
       Testjour.logger.info "Visiting..."
@@ -106,13 +108,15 @@ module Commands
     # Not every platform supports fork. Here we do our magic to
     # determine if yours does.
     def fork
-      return if @cant_fork
-
-      # begin
-        # Kernel.fork
-      # rescue NotImplementedError
         @cant_fork = true
-        nil
+        return nil
+      # we cant fork because solr is too slow
+      # =====================================
+      # begin
+      #   Kernel.fork
+      # rescue NotImplementedError
+      #   @cant_fork = true
+      #   nil
       # end
     end
     
