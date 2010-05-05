@@ -68,12 +68,17 @@ class ProgressBar
     len = percentage * (@bar.length + 1) / 100
     sprintf("[%.*s%s%*s]", len, @bar, ">", [@bar.size - len, 0].max, "")
   end
+  
+  def counter
+    "#{@current}/#{@total}"
+  end
 
   def show (percentage)
-    output = sprintf("%-25s %3d%% %s %s%s", 
+    output = sprintf("%-25s %3d%% %s %s %s%s", 
     @title[0,25], 
     percentage, 
     bar(percentage),
+    counter,
     time,
     eol
     )
