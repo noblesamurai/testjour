@@ -14,7 +14,7 @@ module Commands
 
     # Boolean indicating whether this worker can or can not fork.
     # Automatically set if a fork(2) fails.
-    attr_accessor :cant_fork
+    attr_accessor :cant_fork, :html_out_file
 
     def execute
       configuration.parse!
@@ -27,6 +27,7 @@ module Commands
         before_require
         
         begin
+          
           configuration.setup
           configuration.setup_mysql
           
@@ -64,17 +65,11 @@ module Commands
           Testjour.logger.info "Loading: #{feature_file}"
           features = load_plain_text_features(feature_file)
           parent_pid = $PID
-          if @child = fork
-            Testjour.logger.info "Forked #{@child} to run #{feature_file}"
-            Process.wait
-            Testjour.logger.info "Fork finished running #{feature_file}"
-          else
-            Testjour.override_logger_pid(parent_pid)
-            Testjour.logger.info "Executing: #{feature_file}"
-            failure = execute_features(features)
-            Testjour.logger.info "Done: #{feature_file}"
-            exit unless @cant_fork
-          end
+          Testjour.override_logger_pid(parent_pid)
+          Testjour.logger.info "Executing: #{feature_file}"
+          Testjour.logger.info "Features Output: features.html" unless @html_out_file.closed?
+          failure = execute_features(features)
+          Testjour.logger.info "Done: #{feature_file}"
         else
           Testjour.logger.info "No feature file found. Finished"
         end
