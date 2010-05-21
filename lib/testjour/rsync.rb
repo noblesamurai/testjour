@@ -59,7 +59,7 @@ module Testjour
 	config = YAML.load_file(file)
         excludes = config["exclude"].split(",").map { |exclude|
           " --exclude=#{exclude}"
-        }.join(" ") unless config["exclude"].blank?
+        }.join(" ") unless config["exclude"] !~ /\S/
       end
       "rsync -az -e \"ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\" --delete#{excludes} --exclude=public/images/products --exclude=.git --exclude=*.log --exclude=*.pid #{@source_uri}/ #{@destination_uri}"
 
