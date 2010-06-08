@@ -24,6 +24,9 @@ module Testjour
 
     def copy_with_retry
       retryable :tries => 2, :on => RsyncFailed do
+        Testjour.logger.info "Rsyncing Config: #{config_command}"
+        copy_config
+        
         Testjour.logger.info "Rsyncing: #{command}"
         copy
         
@@ -45,6 +48,13 @@ module Testjour
       @exit_code = status.exitstatus
     end
     
+    def copy_config
+      @start_time = Time.now
+      
+      status, @stdout, @stderr = systemu(config_command)
+      @exit_code = status.exitstatus
+    end
+    
     def elapsed_time
       Time.now - @start_time
     end
@@ -63,6 +73,10 @@ module Testjour
       end
       "rsync -az -e \"ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\" --delete#{excludes} --exclude=public/images/products --exclude=.git --exclude=*.log --exclude=*.pid #{@source_uri}/ #{@destination_uri}"
 
+    end
+    
+    def config_command
+      "scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no #{@source_uri} #{@destination_uri}/config/"
     end
   end
 end
