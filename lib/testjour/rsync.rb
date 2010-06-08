@@ -24,7 +24,7 @@ module Testjour
 
     def copy_with_retry
       retryable :tries => 2, :on => RsyncFailed do
-        Testjour.logger.info "Rsyncing Config: #{config_command}"
+        Testjour.logger.info "Copying Config: #{config_command}"
         copy_config
         
         Testjour.logger.info "Rsyncing: #{command}"
