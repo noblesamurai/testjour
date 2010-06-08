@@ -76,7 +76,7 @@ module Testjour
     end
     
     def config_command
-      "scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no #{@source_uri} #{@destination_uri}/config/"
+      "scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no #{@source_uri}/config/testjour.yml #{@destination_uri}/config/testjour.yml"
     end
   end
 end
