@@ -58,7 +58,6 @@ module Testjour
       def bundler
         return unless File.exists?('.bundle')
         Testjour.logger.info "Running bundle install"
-        `rm -rf .bundle`
         `bundle install`
       end
     end
