@@ -42,7 +42,7 @@ module Testjour
       end
       
       def local_run_command
-        "testjour run:slave #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
+        "bundle exec testjour run:slave #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
       end
 
       def testjour_uri

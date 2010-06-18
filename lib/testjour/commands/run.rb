@@ -94,7 +94,7 @@ module Commands
     end
 
     def remote_slave_run_command(user, host, path, max_remote_slaves)
-      "ssh -o StrictHostKeyChecking=no #{user}#{'@' if user}#{host} testjour run:remote --in=#{path} --max-remote-slaves=#{max_remote_slaves} #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
+      "ssh -o StrictHostKeyChecking=no #{user}#{'@' if user}#{host} bundle exec testjour run:remote --in=#{path} --max-remote-slaves=#{max_remote_slaves} #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
     end
 
     def start_slave
@@ -128,7 +128,7 @@ module Commands
     end
 
     def local_run_command
-      "testjour run:slave #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
+      "bundle exec testjour run:slave #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
     end
 
     def testjour_uri
