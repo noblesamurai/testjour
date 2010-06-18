@@ -1,8 +1,6 @@
-require './lib/testjour.rb'
-
 Gem::Specification.new do |s|
   s.name         = "testjour"
-  s.version      = Testjour::VERSION
+  s.version      = "0.3.3"
   s.author       = "Bryan Helmkamp"
   s.email        = "bryan" + "@" + "brynary.com"
   s.homepage     = "http://github.com/raldred/testjour"
