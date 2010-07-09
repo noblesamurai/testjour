@@ -48,7 +48,8 @@ module Testjour
   end
 
   def self.setup_logger(dir = "./")
-    @logger = Logger.new(File.expand_path(File.join(dir, "testjour.log")))
+    file = File.open(File.expand_path(File.join(dir, "testjour.log")),'a')
+    @logger = Logger.new(file)
 
     @logger.formatter = proc do |severity, time, progname, msg|
       "#{time.strftime("%b %d %H:%M:%S")} [#{Testjour.effective_pid}]: #{msg}\n"
