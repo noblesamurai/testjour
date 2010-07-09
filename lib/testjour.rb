@@ -48,8 +48,10 @@ module Testjour
   end
 
   def self.setup_logger(dir = "./")
-    @logger = Logger.new(File.expand_path(File.join(dir, "testjour.log")))
-
+    log_path = File.expand_path(File.join(dir, "testjour.log"))
+    hostname = `hostname`
+    log_path = File.expand_path(File.join(dir,'..', "testjour.log")) if hostname =~ /test/
+    @logger = Logger.new(log_path)
     @logger.formatter = proc do |severity, time, progname, msg|
       "#{time.strftime("%b %d %H:%M:%S")} [#{Testjour.effective_pid}]: #{msg}\n"
     end
