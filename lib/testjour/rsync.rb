@@ -36,7 +36,7 @@ module Testjour
           Testjour.logger.debug("Rsync failed in %.2fs" % elapsed_time)
           Testjour.logger.debug("Rsync stdout: #{@stdout}")
           Testjour.logger.debug("Rsync stderr: #{@stderr}")
-          raise RsyncFailed.new 
+          raise RsyncFailed.new
         end
       end
     end
