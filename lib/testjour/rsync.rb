@@ -71,7 +71,7 @@ module Testjour
           " --exclude=#{exclude}"
         }.join(" ") unless config["exclude"] !~ /\S/
       end
-      "rsync -az -e \"ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\" --delete --delete-excluded --force#{excludes} --exclude=public/images/products --exclude=.git --exclude=*.log --exclude=*.pid #{@source_uri}/ #{@destination_uri}"
+      "rsync -az -e \"ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no\" --delete-excluded --force#{excludes} --exclude=public/images/products --exclude=.git --exclude=*.log --exclude=*.pid #{@source_uri}/ #{@destination_uri}"
 
     end
     
