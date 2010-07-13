@@ -21,6 +21,10 @@ module Testjour
       # do nothing
     end
     
+    def inline_jquery
+      # do nothing
+    end
+    
     def set_scenario_color_failed
       # do nothing
     end
