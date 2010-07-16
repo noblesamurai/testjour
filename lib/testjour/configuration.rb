@@ -102,7 +102,7 @@ module Testjour
 
       Array(files).each do |f|
         feature_file = Cucumber::FeatureFile.new(f)
-        feature = feature_file.parse(step_mother, cucumber_configuration.options)
+        feature = feature_file.parse(cucumber_configuration.options)
         if feature
           features.add_feature(feature)
         end
