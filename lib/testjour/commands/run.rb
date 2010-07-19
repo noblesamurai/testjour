@@ -128,7 +128,7 @@ module Commands
     end
 
     def local_run_command
-      "#{File.dirname(__FILE__)}/../../../bin/testjour run:slave #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
+      "testjour run:slave #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
     end
 
     def testjour_uri
