@@ -97,24 +97,24 @@ module Testjour
       @parser ||= Cucumber::Parser::FeatureParser.new
     end
 
-    def load_plain_text_features(files)
-      features = Cucumber::Ast::Features.new
-
-      Array(files).each do |f|
-        feature_file = Cucumber::FeatureFile.new(f)
-        feature = feature_file.parse(cucumber_configuration.options)
-        if feature
-          features.add_feature(feature)
-        end
-      end
-
-      return features
-    end
+    # def load_plain_text_features(files)
+    #   features = Cucumber::Ast::Features.new
+    # 
+    #   Array(files).each do |f|
+    #     feature_file = Cucumber::FeatureFile.new(f)
+    #     feature = feature_file.parse(cucumber_configuration.options)
+    #     if feature
+    #       features.add_feature(feature)
+    #     end
+    #   end
+    # 
+    #   return features
+    # end
 
     def feature_files
       return @feature_files if @feature_files
 
-      features = load_plain_text_features(cucumber_configuration.feature_files)
+      features = step_mother.load_plain_text_features(cucumber_configuration.feature_files)
       finder = Testjour::FeatureFileFinder.new
       walker = Cucumber::Ast::TreeWalker.new(step_mother, [finder])
       walker.options = cucumber_configuration.options

@@ -63,7 +63,7 @@ module Commands
       while feature_file
         if (feature_file = queue.pop(:feature_files))
           Testjour.logger.info "Loading: #{feature_file}"
-          features = load_plain_text_features(feature_file)
+          features = step_mother.load_plain_text_features(feature_file)
           parent_pid = $PID
           Testjour.override_logger_pid(parent_pid)
           Testjour.logger.info "Executing: #{feature_file}"

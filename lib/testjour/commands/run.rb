@@ -119,7 +119,7 @@ module Commands
     def step_counter
       return @step_counter if @step_counter
 
-      features = load_plain_text_features(configuration.feature_files)
+      features = step_mother.load_plain_text_features(configuration.feature_files)
       @step_counter = Testjour::StepCounter.new
       tree_walker = Cucumber::Ast::TreeWalker.new(step_mother, [@step_counter])
       tree_walker.options = configuration.cucumber_configuration.options
@@ -128,7 +128,7 @@ module Commands
     end
 
     def local_run_command
-      "testjour run:slave #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
+      "#{File.dirname(__FILE__)}/../../../bin/testjour run:slave #{configuration.run_slave_args.join(' ')} #{testjour_uri}".squeeze(" ")
     end
 
     def testjour_uri
