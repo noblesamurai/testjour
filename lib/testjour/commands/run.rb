@@ -31,7 +31,6 @@ module Commands
           Testjour.logger.info caller.join("\n")
           redis_queue.reset_all
         end
-        
 
         @started_slaves = 0
         start_slaves
