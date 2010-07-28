@@ -61,18 +61,6 @@ module Testjour
         `source /etc/profile && bundle install`
       end
       
-      def copy_and_link_db
-        db_file = '~/office_kitten/database.yml'
-        db_config = <<-EOR
-        cucumber:
-          adapter: sqlite3
-          database: "db/test.sqlite3"
-          pool: 5
-          timeout: 5000
-        EOR
-        File.open(db_file, 'w') {|f| f.write(db_config) }
-      end
-      
     end
   
   end
