@@ -36,6 +36,7 @@ module Testjour
     end
    
     def reset_all
+      Testjour.logger.info "Clearing Redis Queue"
       redis.del "testjour:#{queue_namespace}:feature_files"
       redis.del "testjour:#{queue_namespace}:results"
     end
