@@ -18,26 +18,21 @@ module Commands
       @configuration
     end
 
-    # def load_plain_text_features(files)
-    #   features = Cucumber::Ast::Features.new
-    # 
-    #   Array(files).each do |f|
-    #     feature_file = Cucumber::FeatureFile.new(f)
-    #     feature = feature_file.parse(step_mother, configuration.cucumber_configuration.options)
-    #     if feature
-    #       features.add_feature(feature)
-    #     end
-    #   end
-    # 
-    #   return features
-    # end
-
     def parser
       @parser ||= Cucumber::Parser::FeatureParser.new
     end
+    
+    def load_feature_files(files)
+      loader = Cucumber::Runtime::FeaturesLoader.new(
+        files,
+        configuration.cucumber_configuration.filters,
+        configuration.cucumber_configuration.tag_expression
+      )
+      features = loader.features
+    end
 
-    def step_mother
-      Cucumber::Cli::Main.step_mother
+    def runtime
+      @runtime ||= Cucumber::Runtime.new(configuration.cucumber_configuration)
     end
 
     def testjour_path

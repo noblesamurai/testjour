@@ -3,7 +3,7 @@ module Testjour
 
 
   class Configuration
-    attr_reader :unknown_args, :options, :path, :full_uri
+    attr_reader :unknown_args, :options, :path, :full_uri, :runtime
 
     def initialize(args)
       @options = {}
@@ -18,8 +18,7 @@ module Testjour
           false
         end
       end
-      # Cucumber.load_language("en")
-      step_mother.options = cucumber_configuration.options
+      @runtime ||= Cucumber::Runtime.new(cucumber_configuration)
     end
 
     def max_local_slaves
@@ -81,10 +80,6 @@ module Testjour
       mysql.load_schema
     end
 
-    def step_mother
-      Cucumber::Cli::Main.step_mother
-    end
-
     def mysql_mode?
       @options[:create_mysql_db]
     end
@@ -97,31 +92,20 @@ module Testjour
       @parser ||= Cucumber::Parser::FeatureParser.new
     end
 
-    # def load_plain_text_features(files)
-    #   features = Cucumber::Ast::Features.new
-    # 
-    #   Array(files).each do |f|
-    #     feature_file = Cucumber::FeatureFile.new(f)
-    #     feature = feature_file.parse(cucumber_configuration.options)
-    #     if feature
-    #       features.add_feature(feature)
-    #     end
-    #   end
-    # 
-    #   return features
-    # end
-
     def feature_files
       return @feature_files if @feature_files
+      
+      loader = Cucumber::Runtime::FeaturesLoader.new(
+        cucumber_configuration.feature_files,
+        cucumber_configuration.filters,
+        cucumber_configuration.tag_expression
+      )
+      features = loader.features
 
-      features = step_mother.load_plain_text_features(cucumber_configuration.feature_files)
       finder = Testjour::FeatureFileFinder.new
-      walker = Cucumber::Ast::TreeWalker.new(step_mother, [finder])
-      walker.options = cucumber_configuration.options
+      walker = Cucumber::Ast::TreeWalker.new(runtime, [finder], cucumber_configuration)
       walker.visit_features(features)
       @feature_files = finder.feature_files
-
-      return @feature_files
     end
 
     def cucumber_configuration

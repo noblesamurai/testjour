@@ -27,7 +27,7 @@ def detached_exec(command)
 end
 
 module Testjour
-  VERSION = "0.3.3"
+  VERSION = "0.4.0"
 
   def self.socket_hostname
     @socket_hostname ||= Socket.gethostname
@@ -56,6 +56,6 @@ module Testjour
       "#{time.strftime("%b %d %H:%M:%S")} [#{Testjour.effective_pid}]: #{msg}\n"
     end
 
-    @logger.level = Logger::DEBUG
+    @logger.level = Logger::WARNING
   end
 end

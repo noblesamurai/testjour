@@ -117,11 +117,16 @@ module Commands
 
     def step_counter
       return @step_counter if @step_counter
-
-      features = step_mother.load_plain_text_features(configuration.feature_files)
+      
+      loader = Cucumber::Runtime::FeaturesLoader.new(
+        configuration.cucumber_configuration.feature_files,
+        configuration.cucumber_configuration.filters,
+        configuration.cucumber_configuration.tag_expression
+      )
+      features = loader.features
+      
       @step_counter = Testjour::StepCounter.new
-      tree_walker = Cucumber::Ast::TreeWalker.new(step_mother, [@step_counter])
-      tree_walker.options = configuration.cucumber_configuration.options
+      tree_walker = Cucumber::Ast::TreeWalker.new(runtime, [@step_counter], configuration.cucumber_configuration)
       tree_walker.visit_features(features)
       return @step_counter
     end

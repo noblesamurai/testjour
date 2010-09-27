@@ -63,7 +63,7 @@ module Commands
       while feature_file
         if (feature_file = queue.pop(:feature_files))
           Testjour.logger.info "Loading: #{feature_file}"
-          features = step_mother.load_plain_text_features(feature_file)
+          features = load_feature_files(feature_file)
           parent_pid = $PID
           Testjour.override_logger_pid(parent_pid)
           Testjour.logger.info "Executing: #{feature_file}"
@@ -78,19 +78,20 @@ module Commands
 
     def execute_features(features)
       http_formatter = Testjour::HttpFormatter.new(configuration)
-      html_formatter = Testjour::HtmlFormatter.new(step_mother, @html_out_file, nil)
-      tree_walker = Cucumber::Ast::TreeWalker.new(step_mother, [html_formatter,http_formatter], STDOUT)
-      tree_walker.options = configuration.cucumber_configuration.options
+      html_formatter = Testjour::HtmlFormatter.new(runtime, @html_out_file, nil)
+      tree_walker = Cucumber::Ast::TreeWalker.new(runtime, [html_formatter,http_formatter], configuration.cucumber_configuration)
       Testjour.logger.info "Visiting..."
-      step_mother.visitor = tree_walker 
+      runtime.visitor = tree_walker
       tree_walker.visit_features(features)
-      failure = step_mother.scenarios(:failed).any?
+      failure = runtime.scenarios(:failed).any?
     end
 
     def require_cucumber_files
-      step_mother.load_code_files(configuration.cucumber_configuration.support_to_load)
-      step_mother.after_configuration(configuration.cucumber_configuration)
-      step_mother.load_code_files(configuration.cucumber_configuration.step_defs_to_load)
+      support_code = Cucumber::Runtime::SupportCode.new(runtime, configuration.cucumber_configuration.guess?)
+      files = configuration.cucumber_configuration.support_to_load + configuration.cucumber_configuration.step_defs_to_load
+      support_code.load_files!(files)
+      support_code.fire_hook(:after_configuration, configuration.cucumber_configuration)
+      runtime.instance_variable_set('@support_code',support_code)
     end
     
     def preload_app
