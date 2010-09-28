@@ -55,7 +55,6 @@ module Testjour
     @logger.formatter = proc do |severity, time, progname, msg|
       "#{time.strftime("%b %d %H:%M:%S")} [#{Testjour.effective_pid}]: #{msg}\n"
     end
-
-    @logger.level = Logger::WARNING
+    @logger.level = Logger::INFO
   end
 end
