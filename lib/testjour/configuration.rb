@@ -9,6 +9,7 @@ module Testjour
       @options = {}
       @args = args
       @unknown_args = []
+      Cucumber.logger.level = Logger::INFO
     end
 
     def setup
