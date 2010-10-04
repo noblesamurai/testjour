@@ -56,7 +56,7 @@ module Testjour
       end
       
       def bundler
-        return unless File.exists?('Gemfile.lock')
+        return unless File.exists?('Gemfile')
         Testjour.logger.info "Running bundle install"
         `source /etc/profile && bundle install`
       end
