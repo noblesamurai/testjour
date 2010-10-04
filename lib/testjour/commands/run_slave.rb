@@ -58,7 +58,7 @@ module Commands
                              configuration.queue_timeout)
       feature_file = true
       
-      @html_out_file = File.open('features.html','w')
+      @html_out_file = File.open('~/features.html','w')
 
       while feature_file
         if (feature_file = queue.pop(:feature_files))
