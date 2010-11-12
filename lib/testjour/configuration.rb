@@ -66,6 +66,14 @@ module Testjour
       @options[:master_host]
     end
 
+    def env
+      @options[:env]
+    end
+
+    def ssh_key
+      @options[:ssh_key]
+    end
+
     def setup_mysql
       return unless mysql_mode?
 
@@ -257,6 +265,14 @@ module Testjour
         
         opts.on("--master-host=MASTER_HOST", "Override the master host, useful if hostname doesn't resolve") do |master_host|
           @options[:master_host] = master_host
+        end
+
+        opts.on("--env=ENV", "Pass environment variables to the slave") do |env|
+          @options[:env] = env
+        end
+
+        opts.on("--ssh_key=SSH_KEY", "Specify an SSH key file to use for connecting to slaves") do |ssh_key|
+          @options[:ssh_key] = ssh_key
         end
       end
     end

@@ -24,8 +24,8 @@ module Testjour
         Dir.chdir(dir) do
           Testjour.setup_logger(dir)
           Testjour.logger.info "Starting #{self.class.name}"
-          rsync
-          bundler
+          #rsync
+          #bundler
           start_additional_slaves
         end
       end
