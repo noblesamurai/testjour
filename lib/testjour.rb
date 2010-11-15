@@ -48,9 +48,9 @@ module Testjour
   end
 
   def self.setup_logger(dir = "./")
-    log_path = File.expand_path(File.join(dir, "testjour.log"))
     hostname = `hostname`
-    log_path = File.expand_path(File.join(dir,'..', "testjour.log")) if hostname =~ /test/
+	ip = UDPSocket.open {|s| s.connect("64.233.187.99", 1); s.addr.last }
+    log_path = File.expand_path(File.join(dir, "testjour.#{ip}.log"))
     @logger = Logger.new(log_path)
     @logger.formatter = proc do |severity, time, progname, msg|
       "#{time.strftime("%b %d %H:%M:%S")} [#{Testjour.effective_pid}]: #{msg}\n"
