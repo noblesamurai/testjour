@@ -271,7 +271,7 @@ module Testjour
           @options[:env] = env
         end
 
-        opts.on("--ssh_key=SSH_KEY", "Specify an SSH key file to use for connecting to slaves") do |ssh_key|
+        opts.on("--ssh-key=SSH_KEY", "Specify an SSH key file to use for connecting to slaves") do |ssh_key|
           @options[:ssh_key] = ssh_key
         end
       end
