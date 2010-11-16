@@ -59,7 +59,7 @@ module Commands
       feature_file = true
       
       user_host = `echo $HOSTNAME`
-      user_home = `echo $HOME`
+      user_home = `echo $HOME`.strip
 	  html_out = "#{user_home}/features.html"
       @html_out_file = File.open html_out, 'w'
 
