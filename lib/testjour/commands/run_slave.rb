@@ -60,7 +60,7 @@ module Commands
       
       user_host = `echo $HOSTNAME`
       user_home = `echo $HOME`
-      html_out = (user_host =~ /test-slave/) ? "#{user_home}/features.html" : "features.html"
+	  html_out = "#{user_home}/features.html"
       @html_out_file = File.open html_out, 'w'
 
       while feature_file
