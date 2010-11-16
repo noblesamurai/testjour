@@ -6,13 +6,9 @@ module Testjour
     def initialize
       @feature_files = []
     end
-    
-    def before_feature(feature)
-      @current_feature = feature
-    end
-    
-    def before_step(step)
-      @feature_files << @current_feature.file
+
+    def scenario_name(keyword, name, file_colon_line, source_indent)
+      @feature_files << file_colon_line
       @feature_files.uniq!
     end
   end
