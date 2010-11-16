@@ -58,9 +58,7 @@ module Commands
                              configuration.queue_timeout)
       feature_file = true
       
-      user_host = `echo $HOSTNAME`
-      user_home = `echo $HOME`.strip
-	  html_out = "#{user_home}/features.html"
+	  html_out = File.expand_path("~/features.html")
       @html_out_file = File.open html_out, 'w'
 
       while feature_file
