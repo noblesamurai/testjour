@@ -23,6 +23,10 @@ module Testjour
       @step_start = Time.now
     end
 
+    def step_name(keyword, step_match, status, source_indent, background)
+      Testjour.logger.info "#{keyword}#{step_match.format_args "%s"}"
+    end
+
     def after_step_result(keyword, step_match, multiline_arg, status, exception, source_indent, background)
       progress(Time.now - @step_start, status, step_match, exception)
     end

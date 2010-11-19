@@ -81,7 +81,7 @@ module Testjour
 
       mysql.create_database
       at_exit do
-        Testjour.logger.info caller.join("\n")
+        Testjour.logger.info caller.join("\n") if caller
         mysql.drop_database
       end
 
