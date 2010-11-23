@@ -28,7 +28,7 @@ module Commands
         queue_features
         
         at_exit do
-          Testjour.logger.info caller.join("\n")
+          Testjour.logger.info caller.join("\n") if caller
           redis_queue.reset_all
         end
 
