@@ -74,16 +74,19 @@ module Commands
       return if src_uri.host.nil?
 
 	  Thread.new do
+	    Testjour.logger.info "Looking for slaves on #{src_uri.host}:#{src_uri.port || 9999}"
 	    socket = TCPSocket.new(src_uri.host, src_uri.port || 9999)
 		begin
           while (uri = URI.parse(socket.gets)) do
 		    if uri.host then
               uri.path = configuration.slave_path
+              Testjour.logger.info "Found remote slave: #{uri.to_s}"
               @started_slaves += 1
               start_remote_slave(uri.to_s)
 			end
           end
 		rescue
+          # lost server connection.. ignore and keep running with current slaves
 		end
 	  end
 	end

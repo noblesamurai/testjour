@@ -78,7 +78,7 @@ module Testjour
 		@options[:slave_src] || 'http://192.168.200.12:9999/'
 	end
 
-	def slage_path
+	def slave_path
 		@options[:slave_path]
 	end
 
