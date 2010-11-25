@@ -74,6 +74,14 @@ module Testjour
       @options[:ssh_key]
     end
 
+	def slave_src
+		@options[:slave_src] || 'http://192.168.200.12:9999/'
+	end
+
+	def slage_path
+		@options[:slave_path]
+	end
+
     def setup_mysql
       return unless mysql_mode?
 
@@ -273,6 +281,14 @@ module Testjour
 
         opts.on("--ssh-key=SSH_KEY", "Specify an SSH key file to use for connecting to slaves") do |ssh_key|
           @options[:ssh_key] = ssh_key
+        end
+
+        opts.on("--slave-src=SLAVE_SRC", "Source to retrieve a list of slaves from") do |slave_src|
+          @options[:slave_src] = slave_src
+        end
+
+        opts.on("--slave-path=SLAVE_PATH", "Path to use for retrieved slave sources") do |slave_path|
+          @options[:slave_path] = slave_path
         end
       end
     end
