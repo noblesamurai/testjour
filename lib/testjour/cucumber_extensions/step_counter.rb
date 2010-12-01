@@ -1,39 +1,36 @@
 module Testjour
 
     class StepCounter
-      attr_reader :backtrace_lines
 
       def initialize
-        @backtrace_lines = []
+	  	@step_count = 0
       end
 
-      def after_step_result(keyword, step_match, multiline_arg, status, exception, source_indent, background)
-        @backtrace_lines << step_match.backtrace_line
-      end
+	  def before_feature(feature)
+	  	@feature_step_count = 0
+		@feature_row_count = nil
+	  end
+
+	  def after_feature(feature)
+	  	@feature_step_count *= @feature_row_count if !@feature_row_count.nil?
+		@step_count += @feature_step_count
+	  end
 
       def before_outline_table(outline_table)
-        @outline_table = outline_table
+	  	@feature_row_count = 0
       end
 
-      def after_outline_table(outline_table)
-        @outline_table = nil
-      end
+	  def after_step(step)
+	  	@feature_step_count += 1
+	  end
 
-      def table_cell_value(value, status)
-        return unless @outline_table
-        @backtrace_lines << "Table cell value: #{value}" unless table_header_cell?(status)
-      end
+	  def after_table_row(table_row)
+	  	@feature_row_count += 1 if table_row.scenario_outline
+	  end
 
       def count
-        @backtrace_lines.size
-      end
-
-    private
-
-      def table_header_cell?(status)
-        status == :skipped_param
+        @step_count
       end
 
     end
-
 end
