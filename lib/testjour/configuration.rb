@@ -275,6 +275,11 @@ module Testjour
           @options[:master_host] = master_host
         end
 
+		opts.on("--master-host-as-ip", "Override the master host by determining the external IP and using that instead") do
+		  require 'socket'
+		  @options[:master_host] = UDPSocket.open {|s| s.connect("8.8.8.8", 1); s.addr.last }
+		end
+
         opts.on("--env=ENV", "Pass environment variables to the slave") do |env|
           @options[:env] = env
         end
