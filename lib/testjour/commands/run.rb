@@ -28,7 +28,7 @@ module Commands
         queue_features
         
         at_exit do
-          Testjour.logger.info caller.join("\n")
+          Testjour.logger.info caller.join("\n") if caller
           redis_queue.reset_all
         end
 
@@ -59,6 +59,7 @@ module Commands
     def start_slaves
       start_local_slaves
       start_remote_slaves
+      start_remote_slave_discovery
     end
 
     def start_local_slaves
@@ -67,6 +68,28 @@ module Commands
         start_slave
       end
     end
+
+    def start_remote_slave_discovery
+	  src_uri = URI.parse(configuration.slave_src)
+      return if src_uri.host.nil?
+
+	  Thread.new do
+	    Testjour.logger.info "Looking for slaves on #{src_uri.host}:#{src_uri.port || 9999}"
+	    socket = TCPSocket.new(src_uri.host, src_uri.port || 9999)
+		begin
+          while (uri = URI.parse(socket.gets)) do
+		    if uri.host then
+              uri.path = configuration.slave_path
+              Testjour.logger.info "Found remote slave: #{uri.to_s}"
+              @started_slaves += 1
+              start_remote_slave(uri.to_s)
+			end
+          end
+		rescue
+          # lost server connection.. ignore and keep running with current slaves
+		end
+	  end
+	end
 
     def start_remote_slaves
       if configuration.remote_slaves.any?
