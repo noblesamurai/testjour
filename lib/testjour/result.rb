@@ -9,6 +9,7 @@ module Testjour
     attr_reader :message
     attr_reader :backtrace
     attr_reader :backtrace_line
+    attr_reader :source
 
     CHARS = {
       :undefined => 'U',
@@ -18,9 +19,10 @@ module Testjour
       :skipped   => 'S'
     }
 
-    def initialize(time, status, step_match = nil, exception = nil)
+    def initialize(time, status, step_match = nil, exception = nil, source = nil)
       @time   = time
       @status = status
+      @source = source
 
       if step_match
         @backtrace_line = step_match.backtrace_line

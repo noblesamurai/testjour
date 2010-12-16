@@ -31,13 +31,13 @@ module Testjour
       case result.char
       when "F"
         erase_current_line
-        print Testjour::Colorer.failed("F#{@result_set.errors.size}) ")
+        print Testjour::Colorer.failed("[#{result.source}] F#{@result_set.errors.size}) ")
         puts Testjour::Colorer.failed(result.message)
         puts result.backtrace
         puts
       when "U"
         erase_current_line
-        print Testjour::Colorer.undefined("U#{@result_set.undefineds.size}) ")
+        print Testjour::Colorer.undefined("[#{result.source}] U#{@result_set.undefineds.size}) ")
         puts Testjour::Colorer.undefined(result.backtrace_line)
         puts
       end

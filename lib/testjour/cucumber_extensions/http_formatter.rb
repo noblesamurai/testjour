@@ -50,13 +50,16 @@ module Testjour
       queue = RedisQueue.new(@configuration.queue_host,
                              @configuration.queue_prefix,
                              @configuration.queue_timeout)
-      queue.push(:results, Result.new(time, status, step_match, exception))
+      queue.push(:results, Result.new(time, status, step_match, exception, my_ip))
     end
 
     def table_header_cell?(status)
       status == :skipped_param
     end
 
+    def my_ip
+      UDPSocket.open {|s| s.connect('8.8.8.8', 1); s.addr.last}
+    end
   end
 
 end
