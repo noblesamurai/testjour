@@ -25,7 +25,7 @@ module Testjour
 	  end
 
 	  def after_table_row(table_row)
-	  	@feature_row_count += 1 if table_row.scenario_outline
+	  	@feature_row_count += 1 if table_row.respond_to?(:scenario_outline) and table_row.scenario_outline
 	  end
 
       def count
