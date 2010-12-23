@@ -10,7 +10,7 @@ module Testjour
     attr_reader :backtrace
     attr_reader :backtrace_line
     attr_reader :source
-    attr_reader :step_match_name
+    attr_reader :step_match
 
     CHARS = {
       :undefined => 'U',
@@ -24,7 +24,7 @@ module Testjour
       @time   = time
       @status = status
       @source = source
-	  @step_match_name = step_match ? step_match.name : ""
+	  @step_match = step_match
 
       if step_match
         @backtrace_line = step_match.backtrace_line
