@@ -40,6 +40,10 @@ module Testjour
         print Testjour::Colorer.undefined("[#{result.source}] U#{@result_set.undefineds.size}) ")
         puts Testjour::Colorer.undefined(result.backtrace_line)
         puts
+	  else
+		erase_current_line
+		print "[#{result.source}] Success! #{result.step_match_name}\n"
+		puts
       end
     end
 
