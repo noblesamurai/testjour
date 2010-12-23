@@ -42,7 +42,7 @@ module Testjour
         puts
 	  else
 		erase_current_line
-		print "[#{result.source}] Success! #{result.step_match.inspect}\n"
+		print "[#{result.source}] Success! #{result.step_match}\n"
 		puts
       end
     end

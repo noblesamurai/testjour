@@ -24,7 +24,7 @@ module Testjour
       @time   = time
       @status = status
       @source = source
-	  @step_match = step_match
+	  @step_match = step_match.inspect
 
       if step_match
         @backtrace_line = step_match.backtrace_line
