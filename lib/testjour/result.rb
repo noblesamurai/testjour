@@ -24,7 +24,7 @@ module Testjour
       @time   = time
       @status = status
       @source = source
-	  @step_match = step_match.inspect
+	  @step_match = "#{step_match.name.inspect},#{step_match.instance_variable_get("@name_to_match").inspect},#{(step_match.file_colon_line rescue false).inspect}"
 
       if step_match
         @backtrace_line = step_match.backtrace_line
