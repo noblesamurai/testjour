@@ -8,24 +8,33 @@ module Testjour
 
 	  def before_feature(feature)
 	  	@feature_step_count = 0
-		@feature_row_count = nil
+		@bg = []
+		@current = nil
 	  end
 
 	  def after_feature(feature)
-	  	@feature_step_count *= @feature_row_count if !@feature_row_count.nil?
 		@step_count += @feature_step_count
 	  end
 
-      def before_outline_table(outline_table)
-	  	@feature_row_count = 0
-      end
-
-	  def after_step(step)
-	  	@feature_step_count += 1
+	  def scenario_name *a
+		@current = a
+		if @current.first == "Scenario Outline"
+		  @feature_step_count += @bg.length
+		elsif @current.first == "Scenario"
+		  @feature_step_count += @bg.length * 2
+		else
+		  raise "Don't know how to count backgrounds for a #{@current.first}"
+		end
 	  end
 
-	  def after_table_row(table_row)
-	  	@feature_row_count += 1 if table_row.respond_to?(:scenario_outline) and table_row.scenario_outline
+	  def after_step(step)
+	    if step.background? and @current.nil?
+		  @bg << step.name
+		elsif step.background?
+		  # ignore bg steps, we add their counts in +scenario_name+
+		else
+		  @feature_step_count += 1
+		end
 	  end
 
       def count
@@ -34,3 +43,5 @@ module Testjour
 
     end
 end
+
+# vim: set sw=2:
