@@ -80,7 +80,7 @@ class ProgressBar
     bar(percentage),
     counter,
     time,
-    eol
+    ENV["TESTJOUR_SHOW_SUCCESS"] ? "\n" : eol
     )
     
     unless @colorer.nil?

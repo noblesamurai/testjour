@@ -41,9 +41,11 @@ module Testjour
         puts Testjour::Colorer.undefined(result.backtrace_line)
         puts
 	  else
-		erase_current_line
-		print "[#{result.source}] Success! #{result.step_match}\n"
-		puts
+		if ENV["TESTJOUR_SHOW_SUCCESS"]
+		  erase_current_line
+		  print "[#{result.source}] Success! #{result.step_match}\n"
+		  puts
+		end
       end
     end
 
