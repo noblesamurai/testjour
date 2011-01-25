@@ -17,7 +17,7 @@ def detached_exec(command)
   pid = fork do
     silence_stream(STDOUT) do
       silence_stream(STDERR) do
-        exec(command)
+        exec(command, :close_others => true)
       end
     end
   end
