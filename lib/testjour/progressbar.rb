@@ -56,7 +56,7 @@ class ProgressBar
   end
   
   def time
-    if @is_finished then elapsed else eta end
+    if @is_finished then elapsed else elapsed + "  " + eta end
   end
 
   def eol
