@@ -122,6 +122,7 @@ module Commands
     def start_slave
       Testjour.logger.info "Starting slave: #{local_run_command}"
       detached_exec(local_run_command)
+	  sleep 5
     end
 
     def print_results
